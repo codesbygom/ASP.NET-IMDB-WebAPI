@@ -1,0 +1,33 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: imdb-sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${SA_PASSWORD:?set SA_PASSWORD in .env}
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserverdata:/var/opt/mssql
+
+  webapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    environment:
+      ConnectionStrings__DefaultConnection: Server=db;Database=IMDB;User Id=sa;Password=${SA_PASSWORD};Encrypt=False;TrustServerCertificate=True
+      Database__MigrateOnStartup: "true"
+      Jwt__SigningKey: ${JWT_SIGNING_KEY:?set JWT_SIGNING_KEY in .env}
+      Jwt__Issuer: http://localhost:5000
+      Jwt__Audience: http://localhost:5000
+      Seed__AdminUserName: ${SEED_ADMIN_USERNAME:-}
+      Seed__AdminEmail: ${SEED_ADMIN_EMAIL:-}
+      Seed__AdminPassword: ${SEED_ADMIN_PASSWORD:-}
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "5000:8080"
+
+volumes:
+  sqlserverdata:

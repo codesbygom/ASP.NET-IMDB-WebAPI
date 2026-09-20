@@ -1,0 +1,10 @@
+bin/
+obj/
+.vs/
+.idea/
+.vscode/
+*.user
+*.suo
+TestResults/
+.env
+appsettings.Development.json
