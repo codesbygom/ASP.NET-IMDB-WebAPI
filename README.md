@@ -2,10 +2,19 @@
 
 An IMDb-style REST API for movies, series, seasons, episodes, people, cast, comments and ratings. Built with **ASP.NET Core 8**, **EF Core (SQL Server)**, **ASP.NET Core Identity + JWT**, **MediatR** and structured with **Clean Architecture** and tactical **Domain-Driven Design**.
 
+## Repository layout
+
+```
+backend/    ASP.NET Core API (Clean Architecture + DDD), Dockerfile, docker-compose
+frontend/   Next.js app that uses the API (see frontend/.env.example)
+```
+
+Run the frontend with `cd frontend && npm install && npm run dev` (it proxies `/api` to the API on http://localhost:5000). Backend commands below run from `backend/`.
+
 ## Architecture
 
 ```
-src/
+backend/src/
   IMDB.Domain          Aggregates, entities, value objects, domain exceptions, repository contracts.
                        No package dependencies.
   IMDB.Application     Use cases as MediatR commands and queries, DTOs, mappings, pipeline behaviors,
@@ -36,6 +45,7 @@ Every use case is a MediatR request with its own handler, for example `CreateMov
 Start SQL Server and the API with Docker:
 
 ```bash
+cd backend
 cp .env.example .env
 docker compose up --build
 ```
@@ -43,7 +53,7 @@ docker compose up --build
 Or run the API directly (LocalDB by default):
 
 ```bash
-cd src/IMDB.WebAPI
+cd backend/src/IMDB.WebAPI
 dotnet user-secrets set "Jwt:SigningKey" "<random string, at least 32 characters>"
 dotnet user-secrets set "Database:MigrateOnStartup" "true"
 dotnet run
